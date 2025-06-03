@@ -15,33 +15,33 @@ Este projeto oferece uma solução prática para quem precisa baixar conteúdo d
 **Python 3**: Linguagem de programação principal.
 <br/>
 **Flask**: Micro-framework web para o backend.
-
+<br/>
 **yt-dlp**: Ferramenta de linha de comando para download de vídeos.
-
+<br/>
 **FFmpeg**: Ferramenta essencial para processamento e mesclagem de áudio/vídeo, utilizada pelo yt-dlp.
-
+<br/>
 **Docker**: Para containerização da aplicação.
-
+<br/>
 **HTML, CSS, JavaScript**: Para a interface do usuário no frontend.
-
+<br/>
 **Gemini**: Compilador do código (código gerado por IA - Supervisionado)
-
+<br/>
 <a href="https://flask.palletsprojects.com/en/stable/" target="_blank" rel="noreferrer"><img src="https://flask.palletsprojects.com/en/stable/_images/flask-horizontal.png" alt="flask" height="40"/></a>  <a href="https://www.python.org" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" height="40"/></a>  <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noreferrer"><img src="https://avatars.githubusercontent.com/u/79589310?s=48&v=4" alt="yt-dlp" height="40"/></a>  <a href="https://ffmpeg.org/" target="_blank" rel="noreferrer"><img src="https://trac.ffmpeg.org/ffmpeg-logo.png" alt="ffmpeg" height="40"/></a> <a href="https://www.docker.com/" target="_blank" rel="noreferrer"><img src="https://banner2.cleanpng.com/20180802/ipp/c26b0dc2951a5195ae50c46f6be2544e.webp" alt="docker" height="40"/></a> <a href="https://www.docker.com/" target="_blank" rel="noreferrer"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/344px-Google_Gemini_logo.svg.png" alt="gemini" height="40"/></a>  <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/></a>  <a href="https://git-scm.com/" target="_blank" rel="noreferrer"><img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/></a> <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/></a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/></a>  
 
-### Estrutura do Projeto
+## Estrutura do Projeto
 ├── app.py                  # Lógica do backend Flask
-
+<br/>
 ├── requirements.txt        # Dependências Python (Flask, yt-dlp)
-
+<br/>
 ├── Dockerfile              # Instruções para construir a imagem Docker
-
+<br/>
 ├── deploy.sh               # Script para automatizar o deploy Docker
-
+<br/>
 └── templates/
-
+<br/>
     └── index.html          # Interface web (frontend)
 
-### Pré-requisitos
+## Pré-requisitos
 * Docker instalado e configurado no seu servidor.
 * Configuração e Execução
 * Siga estes passos para colocar o aplicativo em funcionamento:
@@ -57,7 +57,7 @@ Este projeto oferece uma solução prática para quem precisa baixar conteúdo d
 			`./deploy.sh`
 			Você verá a saída do processo de construção e inicialização.
 
-### Como Usar o Aplicativo
+## Como Usar o Aplicativo
 **Acesse a Interface Web:**
 Abra seu navegador e digite o endereço IP do seu servidor seguido da porta 9500. Por exemplo: `http://<IP_DO_SEU_SERVIDOR>:9500` (substitua <IP_DO_SEU_SERVIDOR> pelo IP real do seu servidor).  
 
@@ -70,11 +70,11 @@ Clique no botão "Baixar Vídeo". O log de progresso aparecerá abaixo do formul
 **Baixe o Arquivo:**
 Após a mensagem "Download concluído com sucesso no servidor!", um link "Baixar Arquivo" aparecerá. Clique nele para fazer o download do arquivo para o seu dispositivo local.
 
-### Logs e Depuração
+## Logs e Depuração
 Se você encontrar problemas ou quiser monitorar o que está acontecendo no container, você pode ver os logs do Docker em tempo real:
 `docker logs -f ytd`
 
-### Considerações para Produção
+## Considerações para Produção
 Para um ambiente de produção, algumas práticas são recomendadas:
 - *Desligue o Modo Debug*: No `app.py`, altere `debug=True` para `debug=False`.
 - *Servidor WSGI*: Use um servidor WSGI como Gunicorn ou uWSGI para servir a aplicação Flask de forma mais robusta e performática.
