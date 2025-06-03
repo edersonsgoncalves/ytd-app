@@ -13,17 +13,11 @@ Este projeto oferece uma solução prática para quem precisa baixar conteúdo d
 
 ### Tecnologias Utilizadas
 **Python 3**: Linguagem de programação principal.
-
 **Flask**: Micro-framework web para o backend.
-
 **yt-dlp**: Ferramenta de linha de comando para download de vídeos.
-
 **FFmpeg**: Ferramenta essencial para processamento e mesclagem de áudio/vídeo, utilizada pelo yt-dlp.
-
 **Docker**: Para containerização da aplicação.
-
 **HTML, CSS, JavaScript**: Para a interface do usuário no frontend.
-
 **Gemini**: Compilador do código (código gerado por IA - Supervisionado)
 
 <a href="https://flask.palletsprojects.com/en/stable/" target="_blank" rel="noreferrer"><img src="https://flask.palletsprojects.com/en/stable/_images/flask-horizontal.png" alt="flask" height="40"/></a>  <a href="https://www.python.org" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" height="40"/></a>  <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noreferrer"><img src="https://avatars.githubusercontent.com/u/79589310?s=48&v=4" alt="yt-dlp" height="40"/></a>  <a href="https://ffmpeg.org/" target="_blank" rel="noreferrer"><img src="https://trac.ffmpeg.org/ffmpeg-logo.png" alt="ffmpeg" height="40"/></a> <a href="https://www.docker.com/" target="_blank" rel="noreferrer"><img src="https://banner2.cleanpng.com/20180802/ipp/c26b0dc2951a5195ae50c46f6be2544e.webp" alt="docker" height="40"/></a> <a href="https://www.docker.com/" target="_blank" rel="noreferrer"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/344px-Google_Gemini_logo.svg.png" alt="gemini" height="40"/></a>  <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/></a>  <a href="https://git-scm.com/" target="_blank" rel="noreferrer"><img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/></a> <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/></a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/></a>  
