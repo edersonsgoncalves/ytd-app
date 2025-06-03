@@ -65,30 +65,44 @@ def get_logs():
     while not download_log_queue.empty():
         logs.append(download_log_queue.get())
     
-    # Verifica se o download foi concluído (se current_download_filename não é None)
-    # ou se um dos sinalizadores de fim foi colocado na fila
-    download_finished_signal = False
-    if "__DOWNLOAD_COMPLETE__\n" in logs:
-        download_finished_signal = True
-    elif "__DOWNLOAD_FAILED__\n" in logs:
-        download_finished_signal = True
+    # Cria uma lista de logs "limpos" para a verificação dos sinais
+    cleaned_logs = [log.strip() for log in logs] # Remove espaços em branco e quebras de linha
 
-    return jsonify({"logs": logs, "download_finished": download_finished_signal})
+    download_finished_signal = False
+    download_successful_signal = False 
+
+    # Verifica a presença dos sinais na lista de logs limpos
+    if "__DOWNLOAD_COMPLETE__" in cleaned_logs:
+        download_finished_signal = True
+        download_successful_signal = True # Download foi um sucesso
+    elif "__DOWNLOAD_FAILED__" in cleaned_logs:
+        download_finished_signal = True
+        download_successful_signal = False # Download falhou
+
+    return jsonify({
+        "logs": logs, # Envia os logs originais para exibição
+        "download_finished": download_finished_signal,
+        "download_successful": download_successful_signal 
+    })
 
 @app.route('/download_file')
 def download_file_route():
     global current_download_filename
+    # Adiciona um print de depuração para ver o valor de current_download_filename
+    print(f"DEBUG: download_file_route called. current_download_filename: {current_download_filename}")
+    
     if current_download_filename and os.path.exists(current_download_filename):
         # Armazena o caminho do arquivo para enviar antes de limpar a variável global
         file_to_send = current_download_filename
         
-        # Limpa o nome do arquivo atual após o envio para evitar re-downloads acidentais
-        # ou indica que o download foi "consumido" pelo navegador.
-        current_download_filename = None 
+        # Temporariamente, REMOVEMOS esta linha para depurar se ela está causando o problema.
+        # current_download_filename = None 
         
         # Envia o arquivo como anexo, forçando o download no navegador
         return send_file(file_to_send, as_attachment=True)
     else:
+        # Adiciona um print de depuração para o caminho de erro
+        print(f"DEBUG: File not found or current_download_filename is None. Path: {current_download_filename}")
         # Se o arquivo não for encontrado ou o download não tiver sido concluído
         return jsonify({"error": "Arquivo não encontrado ou download não concluído."}), 404
 
@@ -191,4 +205,4 @@ if __name__ == '__main__':
     # A porta 9500 é a porta interna do container, conforme sua instrução.
     # debug=True é bom para desenvolvimento (reinicia o servidor em mudanças, exibe erros),
     # mas deve ser desligado em produção por questões de segurança e performance.
-    app.run(host='0.0.0.0', port=9500, debug=True)
+    app.run(host='0.0.0.0', port=9500, debug=False)
