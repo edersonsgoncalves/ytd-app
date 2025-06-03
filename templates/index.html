@@ -70,7 +70,7 @@
             color: #0c5460;
             border-color: #bee5eb;
         }
-        #loading { /* Alterado para loading + log area */
+        #loading-message { /* Separado do log-output */
             display: none; 
             margin-top: 20px;
             font-style: italic;
@@ -78,6 +78,7 @@
             text-align: left;
         }
         #log-output {
+            display: none; /* Esconde por padrão, JS vai mostrar */
             margin-top: 20px;
             background-color: #e9e9e9;
             border: 1px solid #ccc;
@@ -117,10 +118,11 @@
             <button type="submit" id="downloadButton">Baixar Vídeo</button>
         </form>
 
-        <div id="loading">
+        <div id="loading-message">
             <p>Iniciando download...</p>
-            <div id="log-output"></div>
         </div>
+
+        <div id="log-output"></div> <!-- Movido para fora de loading-message -->
 
         <div id="download-link-area">
             <p>Download concluído! Clique para baixar:</p>
@@ -140,7 +142,7 @@
         let logInterval;
         let downloadFinished = false;
         const logOutput = document.getElementById('log-output');
-        const loadingDiv = document.getElementById('loading');
+        const loadingMessageDiv = document.getElementById('loading-message'); // Renomeado
         const downloadButton = document.getElementById('downloadButton');
         const messageArea = document.getElementById('message-area');
         const downloadLinkArea = document.getElementById('download-link-area');
@@ -149,10 +151,11 @@
         function handleFormSubmit(event) {
             event.preventDefault(); // Impede o envio tradicional do formulário
             
-            // Limpa mensagens anteriores
+            // Limpa mensagens anteriores e logs
             messageArea.innerHTML = '';
             logOutput.innerHTML = '';
-            loadingDiv.style.display = 'block';
+            loadingMessageDiv.style.display = 'block'; // Mostra a mensagem de loading
+            logOutput.style.display = 'block'; // Mostra a área de log
             downloadButton.disabled = true;
             downloadFinished = false;
             downloadLinkArea.style.display = 'none';
@@ -169,51 +172,27 @@
                     'video_url': videoUrl
                 })
             })
-            .then(response => response.text()) // Obter o HTML retornado
-            .then(html => {
-                // Atualiza a área de mensagens com o HTML retornado pelo Flask
-                // Para pegar apenas a div de mensagem, podemos fazer uma pequena gambiarra
-                // ou ter um JSON response do Flask
-                // Por enquanto, vamos supor que o Flask respondeu com o HTML completo,
-                // e o fetch não é ideal para isso. Vamos mudar para JSON para melhor controle.
-                // Revertendo para um modelo onde o Flask responde com JSON para estado.
-                // A sugestão do professor é melhor.
-                // Vamos refatorar o Flask para retornar JSON para o POST
-                // e apenas o GET renderiza o template.
-
-                // Para o seu caso atual, onde o Flask responde HTML completo:
-                // O fetch acima não é ideal para render_template.
-                // A forma mais simples de fazer "log" em tempo real
-                // com seu setup atual é:
-                // 1. O submit do form tradicional (que recarrega a página)
-                // 2. Quando a página recarregar, o JS detecta se o download está em andamento.
-                // 3. Se sim, ele inicia o polling de logs.
-
-                // Refatoração da lógica:
-                // O form continua sendo POST tradicional.
-                // A mensagem "Download iniciado..." é renderizada pelo Flask no primeiro submit.
-                // O JS só vai iniciar o polling de logs SE a página for carregada COM "download_in_progress=True"
-
-                // A função handleFormSubmit pode ser removida e voltar para o onsubmit original do form.
-                // E o JS apenas verifica no carregamento da página.
-                
-                // **** CORREÇÃO ABAIXO (Volta para submit tradicional e polling no load) ****
-                // A lógica de fetch para POST inicial complica o render_template.
-                // Vamos voltar para o submit tradicional do formulário.
-                // O JavaScript vai verificar se 'download_in_progress' foi setado pelo Flask na renderização inicial.
+            .then(response => response.json()) // Espera uma resposta JSON
+            .then(data => {
+                messageArea.innerHTML = `<div class="message ${data.status}">${data.message}</div>`;
+                if (data.download_in_progress) {
+                    logInterval = setInterval(fetchLogs, 1000); // Inicia o polling
+                } else {
+                    // Se o download não foi iniciado (ex: URL vazia), esconde o loading e o log
+                    loadingMessageDiv.style.display = 'none';
+                    logOutput.style.display = 'none'; 
+                    downloadButton.disabled = false;
+                }
             })
             .catch(error => {
                 console.error('Erro ao iniciar download:', error);
                 messageArea.innerHTML = `<div class="message error">Erro ao iniciar download: ${error.message}</div>`;
-                loadingDiv.style.display = 'none';
+                loadingMessageDiv.style.display = 'none';
+                logOutput.style.display = 'none'; // Esconde o log se a requisição inicial falhar
                 downloadButton.disabled = false;
             });
         }
         
-        // Remove a função handleFormSubmit e volta para o onsubmit original
-        // document.querySelector('form').onsubmit = showLoading; // Isso já estava.
-        // O Flask agora tem a variável download_in_progress.
-
         // Função para buscar e exibir logs
         function fetchLogs() {
             fetch('/logs')
@@ -226,42 +205,42 @@
 
                     if (data.download_finished) {
                         clearInterval(logInterval); // Para de pollear
-                        loadingDiv.style.display = 'none';
+                        loadingMessageDiv.style.display = 'none'; // Esconde a mensagem de loading
                         downloadButton.disabled = false; // Reabilita o botão
 
                         if (logOutput.innerHTML.includes("__DOWNLOAD_COMPLETE__")) {
                             messageArea.innerHTML = '<div class="message success">Download concluído com sucesso no servidor!</div>';
                             downloadLinkArea.style.display = 'block'; // Mostra o link de download
+                            // O log permanece visível
                         } else if (logOutput.innerHTML.includes("__DOWNLOAD_FAILED__")) {
                             messageArea.innerHTML = '<div class="message error">O download falhou. Verifique os logs para detalhes.</div>';
+                            // O log permanece visível em caso de erro
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Erro ao buscar logs:', error);
                     clearInterval(logInterval); // Para de pollear em caso de erro
-                    loadingDiv.style.display = 'none';
+                    loadingMessageDiv.style.display = 'none';
                     downloadButton.disabled = false;
                     messageArea.innerHTML = `<div class="message error">Erro ao carregar logs: ${error.message}</div>`;
+                    // O log permanece visível em caso de erro de polling
                 });
         }
 
-        // Verifica se o download está em progresso no carregamento da página
+        // `window.onload` agora só lida com o carregamento inicial da página (requisições GET)
         window.onload = function() {
-            // Se a página for recarregada e o Flask passou 'download_in_progress=True'
-            if ({{ download_in_progress|tojson if download_in_progress is defined else 'false' }}) {
-                loadingDiv.style.display = 'block';
-                downloadButton.disabled = true;
-                messageArea.innerHTML = '<div class="message info">Download iniciado. Verifique o log abaixo para o progresso.</div>';
-                logInterval = setInterval(fetchLogs, 1000); // Polling a cada 1 segundo
-            } else if ({{ message|tojson if message is defined else '""' }}) {
-                // Se houver uma mensagem, exibe-a
+            // Se houver uma mensagem inicial (geralmente de um erro no POST que não foi AJAX)
+            // ou se a página foi carregada com um estado pré-definido pelo Flask (menos provável agora)
+            if ({{ message|tojson if message is defined else '""' }}) {
                 messageArea.innerHTML = `
                     <div class="message {{ status if status is defined else 'info' }}">
                         {{ message|safe if message is defined else '' }}
                     </div>
                 `;
             }
+            // A lógica de iniciar o polling de logs no onload é removida,
+            // pois o `handleFormSubmit` agora gerencia isso via AJAX.
         };
 
         // Adiciona um evento para o link de download final
