@@ -39,7 +39,7 @@ Este projeto oferece uma solução prática para quem precisa baixar conteúdo d
 <br/>
 └── templates/
 <br/>
-    └── index.html          # Interface web (frontend)
+&nbsp;&nbsp;&nbsp;&nbsp;└── index.html          # Interface web (frontend)
 
 ## Pré-requisitos
 * Docker instalado e configurado no seu servidor.
