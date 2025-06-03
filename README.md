@@ -1,19 +1,19 @@
 # YouTube Downloader - Web Interface
 Uma interface web simples e leve para baixar vídeos e áudios do YouTube e de outras plataformas suportadas pelo `yt-dlp` diretamente para o seu servidor, com download imediato para o seu navegador.
 
-### Descrição
+## Descrição
 Este projeto oferece uma solução prática para quem precisa baixar conteúdo de vídeo/áudio de diversas fontes (como YouTube) para um servidor remoto e, em seguida, transferir esse arquivo diretamente para o navegador local. Desenvolvido com Flask e containerizado com Docker, ele elimina a necessidade de acesso SSH para iniciar downloads ou de servidores HTTP temporários para acessar os arquivos.
 
-### Funcionalidades
+## Funcionalidades
 * *Download Simplificado*: Cole a URL do vídeo e clique em um botão para iniciar o download.
 * *Priorização de MP4*: Tenta baixar o conteúdo no formato MP4 (vídeo + áudio) por padrão. Se o MP4 não estiver disponível, faz fallback para o melhor formato disponível.
 * *Logs em Tempo Real*: Acompanhe o progresso do download e quaisquer mensagens do `yt-dlp` diretamente na interface web.
 * *Download Direto para o Navegador*: Após a conclusão do download no servidor, um botão é disponibilizado para baixar o arquivo diretamente para o seu dispositivo local.
 * *Containerizado com Docker*: Fácil de configurar e implantar em qualquer ambiente que suporte Docker, garantindo isolamento e portabilidade.
 
-### Tecnologias Utilizadas
+## Tecnologias Utilizadas
 **Python 3**: Linguagem de programação principal.
-
+<br/>
 **Flask**: Micro-framework web para o backend.
 
 **yt-dlp**: Ferramenta de linha de comando para download de vídeos.
