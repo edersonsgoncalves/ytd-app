@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Define o diretório onde os vídeos serão baixados
 # Ele tenta pegar da variável de ambiente DOWNLOAD_FOLDER, senão usa um padrão
-DOWNLOAD_FOLDER = os.environ.get('DOWNLOAD_FOLDER', '/app/downloads_default') 
+DOWNLOAD_FOLDER = os.environ.get('DOWNLOAD_FOLDER', '/var/www/html/ytd/downloads') 
 
 # Cria a pasta de download se ela não existir
 if not os.path.exists(DOWNLOAD_FOLDER):
