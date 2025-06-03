@@ -33,7 +33,7 @@ COPY . .
 RUN mkdir -p /downloads && chmod a+rwx /downloads
 
 # Expõe a porta que a aplicação Flask vai usar
-EXPOSE 5000
+EXPOSE 9500
 
 # Define a variável de ambiente para a pasta de downloads
 # Certifique-se que o Flask use esta variável ou o caminho absoluto '/downloads'
