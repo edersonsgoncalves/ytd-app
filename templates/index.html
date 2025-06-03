@@ -164,11 +164,11 @@
                         loadingMessageDiv.style.display = 'none'; // Esconde a mensagem de loading
                         downloadButton.disabled = false; // Reabilita o botão
 
-                        if (logOutput.innerHTML.includes("__DOWNLOAD_COMPLETE__")) {
+                        if (data.download_successful) { // VERIFICA SE FOI SUCESSO
                             messageArea.innerHTML = '<div class="message success">Download concluído com sucesso no servidor!</div>';
                             downloadLinkArea.style.display = 'block'; // Mostra o link de download
                             // O log permanece visível
-                        } else if (logOutput.innerHTML.includes("__DOWNLOAD_FAILED__")) {
+                        } else { // Download falhou
                             messageArea.innerHTML = '<div class="message error">O download falhou. Verifique os logs para detalhes.</div>';
                             // O log permanece visível em caso de erro
                         }
@@ -215,6 +215,7 @@
         finalDownloadLink.addEventListener('click', function() {
             downloadLinkArea.style.display = 'none'; // Esconde o link após o clique
             // O navegador iniciará o download. O Flask já limpou o current_download_filename
+            // (ou não, se estamos depurando essa parte)
         });
 
     </script>
