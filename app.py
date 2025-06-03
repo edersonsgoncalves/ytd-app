@@ -24,6 +24,12 @@ current_download_filename = None # Para saber qual arquivo está sendo baixado a
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global current_download_filename
+    
+    # Variáveis para passar para o template
+    message = None
+    status = "info"
+    download_in_progress = False
+
     if request.method == 'POST':
         video_url = request.form['video_url']
         if video_url:
@@ -38,22 +44,19 @@ def index():
             download_thread = threading.Thread(target=perform_download, args=(video_url,))
             download_thread.start()
 
-            # Retorna uma resposta JSON para o frontend
-            return jsonify({
-                "status": "info", 
-                "message": "Download iniciado. Verifique o log abaixo para o progresso.", 
-                "download_in_progress": True
-            })
+            # Define as variáveis para o template após iniciar o download
+            message = "Download iniciado. Verifique o log abaixo para o progresso."
+            status = "info"
+            download_in_progress = True
         else:
-            # Retorna uma resposta JSON para o frontend em caso de erro
-            return jsonify({
-                "status": "error", 
-                "message": "Por favor, forneça um link de vídeo.", 
-                "download_in_progress": False
-            })
-    
-    # Para requisições GET, renderiza o formulário inicial
-    return render_template('index.html')
+            # Define as variáveis para o template em caso de URL vazia
+            message = "Por favor, forneça um link de vídeo."
+            status = "error"
+            download_in_progress = False # Não há download em progresso
+
+    # Para requisições GET ou após um POST, renderiza o formulário inicial
+    # passando as variáveis de estado.
+    return render_template('index.html', message=message, status=status, download_in_progress=download_in_progress)
 
 @app.route('/logs')
 def get_logs():
@@ -98,6 +101,10 @@ def perform_download(video_url):
 
         # Comando para baixar o vídeo
         # -f: Define a preferência de formato (MP4 prioritário)
+        #   'bv[ext=mp4]+ba[ext=m4a]/best[ext=mp4]/best' significa:
+        #   1. Melhor vídeo MP4 + Melhor áudio M4A (e mescla)
+        #   2. OU Melhor formato que já seja MP4 completo
+        #   3. OU O melhor formato disponível (qualquer um)
         # -o: Define o nome do arquivo de saída no DOWNLOAD_FOLDER
         # --restrict-filenames: Remove caracteres especiais do nome do arquivo
         # --progress: Exibe o progresso de download no stdout

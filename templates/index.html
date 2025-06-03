@@ -113,7 +113,7 @@
 <body>
     <div class="container">
         <h1>Download de Vídeo</h1>
-        <form method="POST" onsubmit="handleFormSubmit(event)">
+        <form method="POST"> <!-- Removido onsubmit="handleFormSubmit(event)" -->
             <input type="text" id="video_url" name="video_url" placeholder="Cole o link do vídeo aqui" required>
             <button type="submit" id="downloadButton">Baixar Vídeo</button>
         </form>
@@ -138,61 +138,17 @@
         </div>
     </div>
 
+    <!-- Mova o script para o final do body para garantir que os elementos HTML já existam -->
     <script>
         let logInterval;
         let downloadFinished = false;
         const logOutput = document.getElementById('log-output');
-        const loadingMessageDiv = document.getElementById('loading-message'); // Renomeado
+        const loadingMessageDiv = document.getElementById('loading-message');
         const downloadButton = document.getElementById('downloadButton');
         const messageArea = document.getElementById('message-area');
         const downloadLinkArea = document.getElementById('download-link-area');
         const finalDownloadLink = document.getElementById('finalDownloadLink');
 
-        function handleFormSubmit(event) {
-            event.preventDefault(); // Impede o envio tradicional do formulário
-            
-            // Limpa mensagens anteriores e logs
-            messageArea.innerHTML = '';
-            logOutput.innerHTML = '';
-            loadingMessageDiv.style.display = 'block'; // Mostra a mensagem de loading
-            logOutput.style.display = 'block'; // Mostra a área de log
-            downloadButton.disabled = true;
-            downloadFinished = false;
-            downloadLinkArea.style.display = 'none';
-
-            const videoUrl = document.getElementById('video_url').value;
-
-            // Envia o link para o backend Flask via fetch (AJAX)
-            fetch('/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    'video_url': videoUrl
-                })
-            })
-            .then(response => response.json()) // Espera uma resposta JSON
-            .then(data => {
-                messageArea.innerHTML = `<div class="message ${data.status}">${data.message}</div>`;
-                if (data.download_in_progress) {
-                    logInterval = setInterval(fetchLogs, 1000); // Inicia o polling
-                } else {
-                    // Se o download não foi iniciado (ex: URL vazia), esconde o loading e o log
-                    loadingMessageDiv.style.display = 'none';
-                    logOutput.style.display = 'none'; 
-                    downloadButton.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao iniciar download:', error);
-                messageArea.innerHTML = `<div class="message error">Erro ao iniciar download: ${error.message}</div>`;
-                loadingMessageDiv.style.display = 'none';
-                logOutput.style.display = 'none'; // Esconde o log se a requisição inicial falhar
-                downloadButton.disabled = false;
-            });
-        }
-        
         // Função para buscar e exibir logs
         function fetchLogs() {
             fetch('/logs')
@@ -228,19 +184,31 @@
                 });
         }
 
-        // `window.onload` agora só lida com o carregamento inicial da página (requisições GET)
+        // `window.onload` agora lida com o carregamento inicial da página (requisições GET ou POST)
         window.onload = function() {
-            // Se houver uma mensagem inicial (geralmente de um erro no POST que não foi AJAX)
-            // ou se a página foi carregada com um estado pré-definido pelo Flask (menos provável agora)
-            if ({{ message|tojson if message is defined else '""' }}) {
+            // Se a página foi recarregada e o Flask passou 'download_in_progress=True'
+            if ({{ download_in_progress|tojson if download_in_progress is defined else 'false' }}) {
+                loadingMessageDiv.style.display = 'block';
+                logOutput.style.display = 'block'; // Garante que o log esteja visível
+                downloadButton.disabled = true;
+                messageArea.innerHTML = '<div class="message info">Download iniciado. Verifique o log abaixo para o progresso.</div>';
+                logInterval = setInterval(fetchLogs, 1000); // Polling a cada 1 segundo
+            } else if ({{ message|tojson if message is defined else '""' }}) {
+                // Se houver uma mensagem inicial (de um erro ou sucesso que não iniciou download)
                 messageArea.innerHTML = `
                     <div class="message {{ status if status is defined else 'info' }}">
                         {{ message|safe if message is defined else '' }}
                     </div>
                 `;
+                // Se não há download em progresso, mas há uma mensagem,
+                // e não é um erro fatal que esconde o log, podemos mostrar o log.
+                // Por exemplo, para "Por favor, forneça um link de vídeo."
+                if ({{ status|tojson if status is defined else '""' }} === "error" && logOutput.innerHTML === '') {
+                    logOutput.style.display = 'none'; // Esconde o log se for um erro inicial sem log
+                } else {
+                    logOutput.style.display = 'block'; // Mostra o log para mensagens que podem ter logs (mesmo que vazios)
+                }
             }
-            // A lógica de iniciar o polling de logs no onload é removida,
-            // pois o `handleFormSubmit` agora gerencia isso via AJAX.
         };
 
         // Adiciona um evento para o link de download final
